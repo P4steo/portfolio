@@ -1,10 +1,10 @@
-// UI Interactions and Intro
+// UI interactions & intro
 document.addEventListener('DOMContentLoaded', () => {
-  // Intro hide after animation
+  // hide intro after animation
   setTimeout(() => {
     const intro = document.getElementById('intro');
     if (intro) intro.style.display = 'none';
-  }, 1200);
+  }, 1400);
 
   // Tabs
   const tabs = document.querySelectorAll('.tab');
@@ -17,14 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById(id).classList.add('section-active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }));
-
-  // Tools toggling
-  const tools = document.querySelectorAll('.tool');
-  tools.forEach(tool => tool.addEventListener('click', () => {
-    tools.forEach(t => t.classList.remove('active'));
-    tool.classList.add('active');
-  }));
-  document.getElementById('tool-select').classList.add('active');
 
   // Theme toggle
   const themeToggle = document.getElementById('themeToggle');
@@ -48,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const modalClose = document.getElementById('modalClose');
   modalClose.addEventListener('click', () => { modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); });
 
-  // Load projects and wire gallery interactions
+  // Load projects
   fetch('data/projects.json')
     .then(r => r.json())
     .then(data => {
@@ -81,7 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
       grid.appendChild(el);
     });
 
-    // search
     const search = document.getElementById('searchAssets');
     if (search) {
       search.addEventListener('input', () => {
@@ -105,61 +96,84 @@ document.addEventListener('DOMContentLoaded', () => {
   function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 });
 
-// THREE.JS VIEWPORT with mouse-follow cube
+// THREE.JS viewport with improved lighting and mouse-follow cube
 (() => {
   const canvas = document.getElementById('cubeCanvas');
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x0f0f0f);
+  scene.background = new THREE.Color(0x070708);
 
   const camera = new THREE.PerspectiveCamera(50, 2, 0.1, 100);
   camera.position.set(2.6, 1.8, 3.2);
   camera.lookAt(0, 0, 0);
 
-  // Grid and axes
-  const grid = new THREE.GridHelper(12, 24, 0x444444, 0x222222);
-  grid.position.y = -0.6;
+  // Grid + subtle ground
+  const grid = new THREE.GridHelper(14, 28, 0x2b2b2b, 0x151515);
+  grid.position.y = -0.62;
   scene.add(grid);
+
+  // Axes (subtle)
   const axes = new THREE.AxesHelper(1.6);
   axes.material.depthTest = false;
   axes.renderOrder = 2;
+  axes.visible = false; // hide by default for clean look
   scene.add(axes);
 
-  // Cube
+  // Cube (high-quality material)
   const geometry = new THREE.BoxGeometry(1,1,1);
-  const material = new THREE.MeshStandardMaterial({ color: 0xFF9900, roughness: 0.35, metalness: 0.05 });
+  const material = new THREE.MeshPhysicalMaterial({
+    color: 0xff8a00,
+    roughness: 0.28,
+    metalness: 0.05,
+    clearcoat: 0.12,
+    clearcoatRoughness: 0.05,
+    reflectivity: 0.6
+  });
   const cube = new THREE.Mesh(geometry, material);
   cube.castShadow = true;
   cube.receiveShadow = true;
   scene.add(cube);
 
-  // Soft ground plane for subtle contact shadow
+  // Ground contact shadow (soft)
   const groundGeo = new THREE.PlaneGeometry(20,20);
-  const groundMat = new THREE.ShadowMaterial({ opacity: 0.25 });
+  const groundMat = new THREE.ShadowMaterial({ opacity: 0.28 });
   const ground = new THREE.Mesh(groundGeo, groundMat);
   ground.rotation.x = -Math.PI/2;
-  ground.position.y = -0.61;
+  ground.position.y = -0.62;
   ground.receiveShadow = true;
   scene.add(ground);
 
-  // Lights
-  const key = new THREE.DirectionalLight(0xffffff, 1.0);
-  key.position.set(4,6,4);
+  // Lighting: key + fill + rim + ambient for cinematic look
+  const key = new THREE.DirectionalLight(0xffffff, 1.2);
+  key.position.set(4, 6, 4);
   key.castShadow = true;
-  key.shadow.mapSize.set(1024,1024);
+  key.shadow.mapSize.set(2048, 2048);
   key.shadow.camera.near = 0.5;
-  key.shadow.camera.far = 20;
+  key.shadow.camera.far = 30;
+  key.shadow.radius = 6;
   scene.add(key);
 
-  const rim = new THREE.DirectionalLight(0xffffff, 0.25);
-  rim.position.set(-3,2,-4);
+  const fill = new THREE.DirectionalLight(0xffffff, 0.45);
+  fill.position.set(-3, 2, -3);
+  scene.add(fill);
+
+  const rim = new THREE.DirectionalLight(0xffffff, 0.35);
+  rim.position.set(-6, 3, 5);
   scene.add(rim);
 
-  const ambient = new THREE.AmbientLight(0x404040, 0.8);
-  scene.add(ambient);
+  const hemi = new THREE.HemisphereLight(0xaaaaaa, 0x080820, 0.25);
+  scene.add(hemi);
+
+  // subtle environment reflection using a tiny generated cube map (procedural)
+  const pmremGenerator = new THREE.PMREMGenerator(renderer);
+  pmremGenerator.compileEquirectangularShader();
+  // create a soft neutral env by using a small color cube texture
+  const envColor = new THREE.Color(0x222222);
+  scene.environment = null; // keep null but material reflectivity + lights give depth
 
   // Resize handling
   function resize() {
@@ -173,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   window.addEventListener('resize', resize);
 
-  // Mouse-follow rotation logic
+  // Mouse-follow rotation
   let targetRot = { x: 0, y: 0 };
   let currentRot = { x: 0, y: 0 };
   const lerp = (a,b,t) => a + (b-a) * t;
@@ -184,8 +198,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const y = (e.clientY - rect.top) / rect.height;
     const nx = (x - 0.5) * 2;
     const ny = (y - 0.5) * 2;
-    targetRot.y = nx * 1.0;
-    targetRot.x = -ny * 0.7;
+    targetRot.y = nx * 1.05;
+    targetRot.x = -ny * 0.75;
+    idleTimer = 0;
   }
   window.addEventListener('pointermove', onPointerMove);
 
@@ -206,13 +221,14 @@ document.addEventListener('DOMContentLoaded', () => {
     last = now;
     resize();
 
-    currentRot.x = lerp(currentRot.x, targetRot.x, 0.08);
-    currentRot.y = lerp(currentRot.y, targetRot.y, 0.08);
+    currentRot.x = lerp(currentRot.x, targetRot.x, 0.09);
+    currentRot.y = lerp(currentRot.y, targetRot.y, 0.09);
 
     cube.rotation.x = currentRot.x + Math.sin(now * 0.0006) * 0.01;
     cube.rotation.y = currentRot.y + Math.cos(now * 0.0008) * 0.01;
     cube.position.y = Math.sin(now * 0.0012) * 0.02;
 
+    // playhead feedback
     const playhead = document.getElementById('playhead');
     if (playhead) {
       const pct = (currentRot.y + 1.2) / 2.4;
@@ -225,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   requestAnimationFrame(animate);
 
-  // Keyboard control for accessibility
+  // keyboard accessibility
   const canvasEl = document.getElementById('cubeCanvas');
   canvasEl.addEventListener('keydown', (e) => {
     const step = 0.08;
