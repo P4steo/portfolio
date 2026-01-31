@@ -7,19 +7,27 @@
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body class="theme-dark">
+  <!-- START ANIMATION -->
+  <div id="intro" class="intro">
+    <div class="intro-inner">
+      <div class="intro-logo">BlenderPortfolio</div>
+      <div class="intro-sub">Paweł — 3D Artist</div>
+    </div>
+  </div>
+
   <!-- TOP BAR -->
   <header class="topbar" role="banner">
     <div class="topbar-left">
       <div class="logo" aria-hidden="true"><span class="logo-icon">🟠</span> BlenderPortfolio</div>
       <nav class="tabs" role="navigation" aria-label="Główne zakładki">
         <button class="tab active" data-section="about">O mnie</button>
-        <button class="tab" data-section="blender">Projekty Blender</button>
-        <button class="tab" data-section="ue5">Projekty UE5</button>
+        <button class="tab" data-section="projects">Projekty</button>
       </nav>
     </div>
     <div class="topbar-right">
+      <a class="link-btn" href="https://www.artstation.com/actorn" target="_blank" rel="noopener">ArtStation</a>
+      <a class="link-btn" href="https://www.linkedin.com/in/pawelbeiger" target="_blank" rel="noopener">LinkedIn</a>
       <button id="themeToggle" class="icon-btn" aria-pressed="false" title="Przełącz motyw">☯</button>
-      <button id="openUpload" class="icon-btn" title="Dodaj projekt">＋</button>
     </div>
   </header>
 
@@ -36,15 +44,11 @@
     <div class="panel-header">Properties</div>
     <div class="panel-section">
       <h4>Autor</h4>
-      <p>Paweł — 3D Artist; Blender & UE5.</p>
+      <p>Paweł — 3D Artist</p>
     </div>
     <div class="panel-section">
       <h4>Kontakt</h4>
-      <p><a href="#" class="link">GitHub</a> · <a href="https://www.artstation.com/actorn" class="link">ArtStation</a></p>
-    </div>
-    <div class="panel-section">
-      <h4>Viewport</h4>
-      <p>Interaktywny podgląd z gridem i kontrolą myszy.</p>
+      <p><a class="link" href="https://www.artstation.com/actorn" target="_blank" rel="noopener">ArtStation</a> · <a class="link" href="https://www.linkedin.com/in/pawelbeiger" target="_blank" rel="noopener">LinkedIn</a></p>
     </div>
   </aside>
 
@@ -69,55 +73,42 @@
     <section class="content">
       <article id="about" class="section section-active">
         <h1>O mnie</h1>
-        <p>Cześć — jestem Paweł. Tworzę modele, sceny i materiały w Blenderze oraz środowiska w Unreal Engine 5. To portfolio stylizowane na interfejs Blendera — dodawaj projekty przez plik JSON i wrzucaj obrazy do folderu assets.</p>
+        <p>
+          Jestem Paweł. Od 2 lat zajmuję się Blenderem, łącząc techniczną precyzję z artystycznym wyczuciem.
+          Ukończyłem Politechnikę Gdańską na kierunku Informatyka, uzyskując tytuł inżyniera. Moja specjalizacja to inżynieria gier komputerowych.
+          Tworzę zarówno modele low‑poly, jak i high‑poly, skupiając się głównie na mniejszych assetach zamiast pełnych leveli.
+          Dodatkowo programuję blueprinty w Unreal Engine 5, co pozwala mi łączyć modele z funkcjonalnymi prototypami.
+          W portfolio prezentuję starannie wyselekcjonowane prace — renderingi, study materiałów i gotowe assety.
+        </p>
       </article>
 
-      <article id="blender" class="section">
-        <h1>Projekty Blender</h1>
-        <div id="blender-projects" class="gallery" aria-live="polite"></div>
-      </article>
+      <article id="projects" class="section">
+        <h1>Projekty</h1>
+        <div id="projects-gallery" class="gallery" aria-live="polite"></div>
 
-      <article id="ue5" class="section">
-        <h1>Projekty UE5</h1>
-        <div id="ue5-projects" class="gallery" aria-live="polite"></div>
-      </article>
-
-      <!-- ASSET BROWSER -->
-      <section class="asset-browser" aria-label="Asset Browser">
-        <div class="asset-browser-header">
-          <div>
-            <strong>Asset Browser</strong>
-            <div class="asset-browser-sub">Wszystkie projekty</div>
+        <!-- ASSET BROWSER -->
+        <section class="asset-browser" aria-label="Asset Browser">
+          <div class="asset-browser-header">
+            <div>
+              <strong>Asset Browser</strong>
+              <div class="asset-browser-sub">Wszystkie projekty</div>
+            </div>
+            <div class="asset-browser-actions">
+              <input id="searchAssets" class="search" placeholder="Szukaj..." aria-label="Szukaj assetów" />
+            </div>
           </div>
-          <div class="asset-browser-actions">
-            <input id="searchAssets" class="search" placeholder="Szukaj..." aria-label="Szukaj assetów" />
-          </div>
-        </div>
-        <div id="asset-browser-grid" class="asset-grid" role="list"></div>
-      </section>
+          <div id="asset-browser-grid" class="asset-grid" role="list"></div>
+        </section>
+      </article>
     </section>
   </main>
 
-  <!-- MODAL for preview and upload -->
+  <!-- MODAL for preview -->
   <div id="modal" class="modal" role="dialog" aria-hidden="true">
     <div class="modal-content" role="document">
       <button class="modal-close" id="modalClose" aria-label="Zamknij">✕</button>
       <img id="modalImg" alt="" />
       <div id="modalMeta" class="modal-meta"></div>
-    </div>
-  </div>
-
-  <!-- UPLOAD PANEL (simple UI that shows instructions) -->
-  <div id="uploadPanel" class="upload-panel" aria-hidden="true">
-    <div class="upload-inner">
-      <h3>Dodaj projekt</h3>
-      <p>Wrzucasz obraz do <code>assets/blender</code> lub <code>assets/ue5</code> i dopisujesz wpis do <code>data/projects.json</code> w formacie:</p>
-      <pre>{
-  "title": "Nazwa",
-  "image": "assets/blender/nazwa.jpg",
-  "description": "Krótki opis"
-}</pre>
-      <button id="uploadClose" class="btn">Zamknij</button>
     </div>
   </div>
 
