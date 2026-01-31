@@ -4,13 +4,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Paweł — Blender Portfolio</title>
+
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body class="studio-premium">
 
   <!-- Intro -->
-  <div id="intro" class="intro">
+  <div id="intro" class="intro" aria-hidden="true">
     <div class="intro-card">
       <div class="intro-logo">BlenderPortfolio</div>
       <div class="intro-sub">Paweł — 3D Artist</div>
@@ -19,18 +22,18 @@
   </div>
 
   <!-- Topbar -->
-  <header class="topbar">
+  <header class="topbar" role="banner">
     <div class="top-left">
       <div class="brand"><span class="brand-mark">🟠</span><span class="brand-name">BlenderPortfolio</span></div>
-      <nav class="nav">
-        <button class="nav-btn active" data-section="about">O mnie</button>
-        <button class="nav-btn" data-section="projects">Projekty</button>
+      <nav class="nav" aria-label="Nawigacja">
+        <button class="nav-btn active" data-section="about" type="button">O mnie</button>
+        <button class="nav-btn" data-section="projects" type="button">Projekty</button>
       </nav>
     </div>
     <div class="top-right">
       <a class="link" href="https://www.artstation.com/actorn" target="_blank" rel="noopener">ArtStation</a>
       <a class="link" href="https://www.linkedin.com/in/pawelbeiger" target="_blank" rel="noopener">LinkedIn</a>
-      <button id="themeToggle" class="icon">☯</button>
+      <button id="themeToggle" class="icon" aria-pressed="false" type="button">☯</button>
     </div>
   </header>
 
@@ -45,11 +48,11 @@
       </div>
 
       <div class="timeline">
-        <div class="timeline-track"><div id="playhead" class="playhead"></div></div>
+        <div class="timeline-track"><div id="playhead" class="playhead" aria-hidden="true"></div></div>
       </div>
     </section>
 
-    <aside class="side-panel">
+    <aside class="side-panel" aria-label="Panel boczny">
       <div class="meta">
         <h3>Paweł</h3>
         <p class="muted">3D Artist — Blender & UE5 (Blueprints)</p>
@@ -65,38 +68,38 @@
         <h1>O mnie</h1>
         <p>
           Jestem Paweł. Od 2 lat zajmuję się Blenderem, łącząc techniczną precyzję z artystycznym wyczuciem.
-          Ukończyłem Polsko‑Japońską Akademię Technik Komputerowych w Gdańsku (PJATK) na kierunku Informatyka, ze specjalizacją w inżynierii gier komputerowych.
+          Ukończyłem Polsko‑Japońską Akademię Technik Komputerowych w Gdańsku (PJAIT) na kierunku Informatyka, ze specjalizacją w inżynierii gier komputerowych.
           Tworzę zarówno modele low‑poly, jak i high‑poly, skupiając się głównie na mniejszych, dopracowanych assetach zamiast pełnych leveli.
-          Moje prace obejmują modelowanie, teksturowanie, shading oraz lighting studies. Dodatkowo programuję blueprinty w Unreal Engine 5, co pozwala mi łączyć estetykę z funkcjonalnością.
-          W portfolio prezentuję starannie wyselekcjonowane prace: renderingi, study materiałów i gotowe assety gotowe do integracji w silniku.
+          Dodatkowo programuję blueprinty w Unreal Engine 5.
         </p>
       </article>
 
       <article id="projects" class="panel">
         <h1>Projekty</h1>
-        <div id="gallery" class="gallery"></div>
+        <div id="gallery" class="gallery" aria-live="polite"></div>
 
         <div class="asset-browser">
           <div class="asset-header">
             <div><strong>Asset Browser</strong><div class="sub">Wszystkie projekty</div></div>
-            <input id="search" class="search" placeholder="Szukaj..." />
+            <input id="search" class="search" placeholder="Szukaj..." aria-label="Szukaj projektów" />
           </div>
-          <div id="assetGrid" class="asset-grid"></div>
+          <div id="assetGrid" class="asset-grid" role="list"></div>
         </div>
       </article>
     </section>
   </main>
 
   <!-- Modal -->
-  <div id="modal" class="modal" aria-hidden="true">
+  <div id="modal" class="modal" aria-hidden="true" role="dialog" aria-label="Podgląd projektu">
     <div class="modal-inner">
-      <button id="modalClose" class="modal-close">✕</button>
+      <button id="modalClose" class="modal-close" aria-label="Zamknij">✕</button>
       <img id="modalImg" alt="">
       <div id="modalDesc" class="modal-desc"></div>
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="js/main.js"></script>
+  <!-- Three.js first, then main script with defer -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+  <script src="js/main.js" defer></script>
 </body>
 </html>
