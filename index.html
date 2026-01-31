@@ -1,78 +1,70 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Blender Portfolio Studio — Paweł</title>
+  <title>Paweł — Blender Portfolio</title>
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="css/style.css" />
 </head>
-<body class="theme-dark">
-  <!-- INTRO -->
+<body class="studio-premium">
+
+  <!-- Intro (reveal) -->
   <div id="intro" class="intro">
-    <div class="intro-inner">
+    <div class="intro-card">
       <div class="intro-logo">BlenderPortfolio</div>
       <div class="intro-sub">Paweł — 3D Artist</div>
-      <div class="intro-line"></div>
+      <div class="intro-cta">Portfolio</div>
     </div>
   </div>
 
-  <!-- TOP BAR -->
-  <header class="topbar" role="banner">
-    <div class="topbar-left">
-      <div class="logo" aria-hidden="true"><span class="logo-icon">🟠</span> BlenderPortfolio</div>
-      <nav class="tabs" role="navigation" aria-label="Główne zakładki">
-        <button class="tab active" data-section="about">O mnie</button>
-        <button class="tab" data-section="projects">Projekty</button>
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="top-left">
+      <div class="brand"><span class="brand-mark">🟠</span><span class="brand-name">BlenderPortfolio</span></div>
+      <nav class="nav">
+        <button class="nav-btn active" data-section="about">O mnie</button>
+        <button class="nav-btn" data-section="projects">Projekty</button>
       </nav>
     </div>
-    <div class="topbar-right">
-      <a class="link-btn" href="https://www.artstation.com/actorn" target="_blank" rel="noopener">ArtStation</a>
-      <a class="link-btn" href="https://www.linkedin.com/in/pawelbeiger" target="_blank" rel="noopener">LinkedIn</a>
-      <button id="themeToggle" class="icon-btn" aria-pressed="false" title="Przełącz motyw">☯</button>
+    <div class="top-right">
+      <a class="link" href="https://www.artstation.com/actorn" target="_blank" rel="noopener">ArtStation</a>
+      <a class="link" href="https://www.linkedin.com/in/pawelbeiger" target="_blank" rel="noopener">LinkedIn</a>
+      <button id="themeToggle" class="icon">☯</button>
     </div>
   </header>
 
-  <!-- RIGHT PANEL -->
-  <aside class="right-panel" id="rightPanel" aria-label="Properties">
-    <div class="panel-header">Properties</div>
-    <div class="panel-section">
-      <h4>Autor</h4>
-      <p>Paweł — 3D Artist</p>
-    </div>
-    <div class="panel-section">
-      <h4>Kontakt</h4>
-      <p><a class="link" href="https://www.artstation.com/actorn" target="_blank" rel="noopener">ArtStation</a> · <a class="link" href="https://www.linkedin.com/in/pawelbeiger" target="_blank" rel="noopener">LinkedIn</a></p>
-    </div>
-    <div class="panel-section">
-      <h4>Edukacja</h4>
-      <p>Polsko‑Japońska Akademia Technik Komputerowych w Gdańsku (PJAIT) — Inżynieria gier komputerowych.</p>
-    </div>
-  </aside>
+  <!-- Main layout -->
+  <main class="main">
+    <section class="viewport-area">
+      <div class="viewport-shell">
+        <canvas id="viewportCanvas" aria-label="Viewport 3D"></canvas>
+        <div class="viewport-ui">
+          <div class="viewport-title">Default Cube</div>
+        </div>
+      </div>
 
-  <!-- VIEWPORT + TIMELINE -->
-  <main class="viewport-wrapper" role="main">
-    <section class="viewport" id="viewport" aria-label="Viewport 3D">
-      <canvas id="cubeCanvas" tabindex="0" aria-label="Interaktywny viewport 3D"></canvas>
-      <div class="viewport-overlay">
-        <div class="viewport-center-label">Default Cube</div>
+      <div class="timeline">
+        <div class="timeline-track"><div id="playhead" class="playhead"></div></div>
       </div>
     </section>
 
-    <div class="timeline" aria-hidden="false">
-      <div class="timeline-label">Timeline</div>
-      <div class="timeline-bar" aria-hidden="true">
-        <div class="timeline-grid"></div>
-        <div class="timeline-playhead" id="playhead"></div>
+    <aside class="side-panel">
+      <div class="meta">
+        <h3>Paweł</h3>
+        <p class="muted">3D Artist — Blender & UE5 (Blueprints)</p>
+        <div class="meta-section">
+          <h4>Edukacja</h4>
+          <p>Polsko‑Japońska Akademia Technik Komputerowych w Gdańsku (PJAIT) — Inżynieria gier komputerowych.</p>
+        </div>
       </div>
-    </div>
+    </aside>
 
-    <!-- CONTENT SECTIONS -->
     <section class="content">
-      <article id="about" class="section section-active">
+      <article id="about" class="panel active">
         <h1>O mnie</h1>
         <p>
           Jestem Paweł. Od 2 lat zajmuję się Blenderem, łącząc techniczną precyzję z artystycznym wyczuciem.
@@ -83,33 +75,27 @@
         </p>
       </article>
 
-      <article id="projects" class="section">
+      <article id="projects" class="panel">
         <h1>Projekty</h1>
-        <div id="projects-gallery" class="gallery" aria-live="polite"></div>
+        <div id="gallery" class="gallery"></div>
 
-        <!-- ASSET BROWSER -->
-        <section class="asset-browser" aria-label="Asset Browser">
-          <div class="asset-browser-header">
-            <div>
-              <strong>Asset Browser</strong>
-              <div class="asset-browser-sub">Wszystkie projekty</div>
-            </div>
-            <div class="asset-browser-actions">
-              <input id="searchAssets" class="search" placeholder="Szukaj..." aria-label="Szukaj assetów" />
-            </div>
+        <div class="asset-browser">
+          <div class="asset-header">
+            <div><strong>Asset Browser</strong><div class="sub">Wszystkie projekty</div></div>
+            <input id="search" class="search" placeholder="Szukaj..." />
           </div>
-          <div id="asset-browser-grid" class="asset-grid" role="list"></div>
-        </section>
+          <div id="assetGrid" class="asset-grid"></div>
+        </div>
       </article>
     </section>
   </main>
 
-  <!-- MODAL for preview -->
-  <div id="modal" class="modal" role="dialog" aria-hidden="true">
-    <div class="modal-content" role="document">
-      <button class="modal-close" id="modalClose" aria-label="Zamknij">✕</button>
-      <img id="modalImg" alt="" />
-      <div id="modalMeta" class="modal-meta"></div>
+  <!-- Modal -->
+  <div id="modal" class="modal" aria-hidden="true">
+    <div class="modal-inner">
+      <button id="modalClose" class="modal-close">✕</button>
+      <img id="modalImg" alt="">
+      <div id="modalDesc" class="modal-desc"></div>
     </div>
   </div>
 
