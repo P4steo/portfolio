@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio – Blender UI</title>
+    <title>Blender Portfolio</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -18,12 +18,18 @@
         </div>
     </div>
 
-    <!-- LEFT PANEL -->
-    <div class="left-panel">
-        <div class="panel-title">Tools</div>
-        <div class="panel-item">Move</div>
-        <div class="panel-item">Rotate</div>
-        <div class="panel-item">Scale</div>
+    <!-- LEFT TOOLBAR -->
+    <div class="left-toolbar">
+        <div class="tool">🔲</div>
+        <div class="tool">↔️</div>
+        <div class="tool">⟳</div>
+        <div class="tool">⬛</div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+        <h3>Properties</h3>
+        <p>Tu możesz dodać dodatkowe informacje o sobie lub projekcie.</p>
     </div>
 
     <!-- VIEWPORT -->
@@ -31,7 +37,7 @@
         <canvas id="cubeCanvas"></canvas>
     </div>
 
-    <!-- CONTENT SECTIONS -->
+    <!-- CONTENT -->
     <div class="content">
         <div id="about" class="section">
             <h1>O mnie</h1>
@@ -40,12 +46,12 @@
 
         <div id="blender" class="section" style="display:none">
             <h1>Projekty Blender</h1>
-            <p>Tu pojawią się Twoje rendery, animacje i modele.</p>
+            <div id="blender-projects" class="gallery"></div>
         </div>
 
         <div id="ue5" class="section" style="display:none">
             <h1>Projekty UE5</h1>
-            <p>Tu dodasz screeny, trailery i opisy projektów z Unreal Engine.</p>
+            <div id="ue5-projects" class="gallery"></div>
         </div>
     </div>
 
