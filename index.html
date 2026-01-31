@@ -1,92 +1,127 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blender Portfolio Studio</title>
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Blender Portfolio Studio</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body class="theme-dark">
+  <!-- TOP BAR -->
+  <header class="topbar" role="banner">
+    <div class="topbar-left">
+      <div class="logo" aria-hidden="true"><span class="logo-icon">🟠</span> BlenderPortfolio</div>
+      <nav class="tabs" role="navigation" aria-label="Główne zakładki">
+        <button class="tab active" data-section="about">O mnie</button>
+        <button class="tab" data-section="blender">Projekty Blender</button>
+        <button class="tab" data-section="ue5">Projekty UE5</button>
+      </nav>
+    </div>
+    <div class="topbar-right">
+      <button id="themeToggle" class="icon-btn" aria-pressed="false" title="Przełącz motyw">☯</button>
+      <button id="openUpload" class="icon-btn" title="Dodaj projekt">＋</button>
+    </div>
+  </header>
 
-    <!-- TOP BAR -->
-    <div class="topbar">
-        <div class="logo">
-            <span class="logo-icon">🟠</span>
-            <span>BlenderPortfolio</span>
-        </div>
-        <div class="tabs">
-            <button data-section="about" class="active">O mnie</button>
-            <button data-section="blender">Projekty Blender</button>
-            <button data-section="ue5">Projekty UE5</button>
-        </div>
-        <div class="topbar-right">
-            <button id="themeToggle" class="icon-btn" title="Przełącz motyw">☯</button>
-        </div>
+  <!-- LEFT TOOLBAR -->
+  <aside class="left-toolbar" aria-hidden="false">
+    <button class="tool" id="tool-select" title="Select">🖱️</button>
+    <button class="tool" id="tool-move" title="Move">↔️</button>
+    <button class="tool" id="tool-rotate" title="Rotate">⟳</button>
+    <button class="tool" id="tool-scale" title="Scale">⬛</button>
+  </aside>
+
+  <!-- RIGHT PANEL -->
+  <aside class="right-panel" id="rightPanel" aria-label="Properties">
+    <div class="panel-header">Properties</div>
+    <div class="panel-section">
+      <h4>Autor</h4>
+      <p>Paweł — 3D Artist; Blender & UE5.</p>
+    </div>
+    <div class="panel-section">
+      <h4>Kontakt</h4>
+      <p><a href="#" class="link">GitHub</a> · <a href="#" class="link">ArtStation</a></p>
+    </div>
+    <div class="panel-section">
+      <h4>Viewport</h4>
+      <p>Interaktywny podgląd z gridem i kontrolą myszy.</p>
+    </div>
+  </aside>
+
+  <!-- VIEWPORT + TIMELINE -->
+  <main class="viewport-wrapper" role="main">
+    <section class="viewport" id="viewport" aria-label="Viewport 3D">
+      <canvas id="cubeCanvas" tabindex="0" aria-label="Interaktywny viewport 3D"></canvas>
+      <div class="viewport-overlay">
+        <div class="viewport-center-label">Default Cube</div>
+      </div>
+    </section>
+
+    <div class="timeline" aria-hidden="false">
+      <div class="timeline-label">Timeline</div>
+      <div class="timeline-bar" aria-hidden="true">
+        <div class="timeline-grid"></div>
+        <div class="timeline-playhead" id="playhead"></div>
+      </div>
     </div>
 
-    <!-- LEFT TOOLBAR -->
-    <div class="left-toolbar">
-        <div class="tool" title="Select">🖱️</div>
-        <div class="tool" title="Move">↔️</div>
-        <div class="tool" title="Rotate">⟳</div>
-        <div class="tool" title="Scale">⬛</div>
+    <!-- CONTENT SECTIONS -->
+    <section class="content">
+      <article id="about" class="section section-active">
+        <h1>O mnie</h1>
+        <p>Cześć — jestem Paweł. Tworzę modele, sceny i materiały w Blenderze oraz środowiska w Unreal Engine 5. To portfolio stylizowane na interfejs Blendera — dodawaj projekty przez plik JSON i wrzucaj obrazy do folderu assets.</p>
+      </article>
+
+      <article id="blender" class="section">
+        <h1>Projekty Blender</h1>
+        <div id="blender-projects" class="gallery" aria-live="polite"></div>
+      </article>
+
+      <article id="ue5" class="section">
+        <h1>Projekty UE5</h1>
+        <div id="ue5-projects" class="gallery" aria-live="polite"></div>
+      </article>
+
+      <!-- ASSET BROWSER -->
+      <section class="asset-browser" aria-label="Asset Browser">
+        <div class="asset-browser-header">
+          <div>
+            <strong>Asset Browser</strong>
+            <div class="asset-browser-sub">Wszystkie projekty</div>
+          </div>
+          <div class="asset-browser-actions">
+            <input id="searchAssets" class="search" placeholder="Szukaj..." aria-label="Szukaj assetów" />
+          </div>
+        </div>
+        <div id="asset-browser-grid" class="asset-grid" role="list"></div>
+      </section>
+    </section>
+  </main>
+
+  <!-- MODAL for preview and upload -->
+  <div id="modal" class="modal" role="dialog" aria-hidden="true">
+    <div class="modal-content" role="document">
+      <button class="modal-close" id="modalClose" aria-label="Zamknij">✕</button>
+      <img id="modalImg" alt="" />
+      <div id="modalMeta" class="modal-meta"></div>
     </div>
+  </div>
 
-    <!-- RIGHT PANEL -->
-    <div class="right-panel">
-        <div class="panel-header">Properties</div>
-        <div class="panel-section">
-            <h4>Autor</h4>
-            <p>Paweł – projekty w Blenderze i UE5.</p>
-        </div>
-        <div class="panel-section">
-            <h4>Kontakt</h4>
-            <p>Tu możesz dodać linki: ArtStation, GitHub, mail.</p>
-        </div>
+  <!-- UPLOAD PANEL (simple UI that shows instructions) -->
+  <div id="uploadPanel" class="upload-panel" aria-hidden="true">
+    <div class="upload-inner">
+      <h3>Dodaj projekt</h3>
+      <p>Wrzucasz obraz do <code>assets/blender</code> lub <code>assets/ue5</code> i dopisujesz wpis do <code>data/projects.json</code> w formacie:</p>
+      <pre>{
+  "title": "Nazwa",
+  "image": "assets/blender/nazwa.jpg",
+  "description": "Krótki opis"
+}</pre>
+      <button id="uploadClose" class="btn">Zamknij</button>
     </div>
+  </div>
 
-    <!-- VIEWPORT + TIMELINE -->
-    <div class="viewport-wrapper">
-        <div class="viewport">
-            <canvas id="cubeCanvas"></canvas>
-        </div>
-        <div class="timeline">
-            <div class="timeline-label">Timeline</div>
-            <div class="timeline-bar">
-                <div class="timeline-playhead"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- CONTENT -->
-    <div class="content">
-        <div id="about" class="section section-active">
-            <h1>O mnie</h1>
-            <p>Cześć! Jestem Paweł i tworzę projekty w Blenderze oraz Unreal Engine 5.</p>
-            <p>To portfolio stylizowane na interfejs Blendera – viewport, timeline, asset browser i projekty ładowane z pliku.</p>
-        </div>
-
-        <div id="blender" class="section">
-            <h1>Projekty Blender</h1>
-            <div id="blender-projects" class="gallery"></div>
-        </div>
-
-        <div id="ue5" class="section">
-            <h1>Projekty UE5</h1>
-            <div id="ue5-projects" class="gallery"></div>
-        </div>
-
-        <!-- ASSET BROWSER -->
-        <div class="asset-browser">
-            <div class="asset-browser-header">
-                <span>Asset Browser</span>
-                <span class="asset-browser-sub">Wszystkie projekty</span>
-            </div>
-            <div id="asset-browser-grid" class="asset-grid"></div>
-        </div>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="js/main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>
