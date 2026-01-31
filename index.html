@@ -3,55 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blender Portfolio</title>
+    <title>Blender Portfolio Studio</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="theme-dark">
 
     <!-- TOP BAR -->
     <div class="topbar">
-        <div class="logo">BlenderPortfolio</div>
+        <div class="logo">
+            <span class="logo-icon">🟠</span>
+            <span>BlenderPortfolio</span>
+        </div>
         <div class="tabs">
             <button data-section="about" class="active">O mnie</button>
             <button data-section="blender">Projekty Blender</button>
             <button data-section="ue5">Projekty UE5</button>
         </div>
+        <div class="topbar-right">
+            <button id="themeToggle" class="icon-btn" title="Przełącz motyw">☯</button>
+        </div>
     </div>
 
     <!-- LEFT TOOLBAR -->
     <div class="left-toolbar">
-        <div class="tool">🔲</div>
-        <div class="tool">↔️</div>
-        <div class="tool">⟳</div>
-        <div class="tool">⬛</div>
+        <div class="tool" title="Select">🖱️</div>
+        <div class="tool" title="Move">↔️</div>
+        <div class="tool" title="Rotate">⟳</div>
+        <div class="tool" title="Scale">⬛</div>
     </div>
 
     <!-- RIGHT PANEL -->
     <div class="right-panel">
-        <h3>Properties</h3>
-        <p>Tu możesz dodać dodatkowe informacje o sobie lub projekcie.</p>
+        <div class="panel-header">Properties</div>
+        <div class="panel-section">
+            <h4>Autor</h4>
+            <p>Paweł – projekty w Blenderze i UE5.</p>
+        </div>
+        <div class="panel-section">
+            <h4>Kontakt</h4>
+            <p>Tu możesz dodać linki: ArtStation, GitHub, mail.</p>
+        </div>
     </div>
 
-    <!-- VIEWPORT -->
-    <div class="viewport">
-        <canvas id="cubeCanvas"></canvas>
+    <!-- VIEWPORT + TIMELINE -->
+    <div class="viewport-wrapper">
+        <div class="viewport">
+            <canvas id="cubeCanvas"></canvas>
+        </div>
+        <div class="timeline">
+            <div class="timeline-label">Timeline</div>
+            <div class="timeline-bar">
+                <div class="timeline-playhead"></div>
+            </div>
+        </div>
     </div>
 
     <!-- CONTENT -->
     <div class="content">
-        <div id="about" class="section">
+        <div id="about" class="section section-active">
             <h1>O mnie</h1>
             <p>Cześć! Jestem Paweł i tworzę projekty w Blenderze oraz Unreal Engine 5.</p>
+            <p>To portfolio stylizowane na interfejs Blendera – viewport, timeline, asset browser i projekty ładowane z pliku.</p>
         </div>
 
-        <div id="blender" class="section" style="display:none">
+        <div id="blender" class="section">
             <h1>Projekty Blender</h1>
             <div id="blender-projects" class="gallery"></div>
         </div>
 
-        <div id="ue5" class="section" style="display:none">
+        <div id="ue5" class="section">
             <h1>Projekty UE5</h1>
             <div id="ue5-projects" class="gallery"></div>
+        </div>
+
+        <!-- ASSET BROWSER -->
+        <div class="asset-browser">
+            <div class="asset-browser-header">
+                <span>Asset Browser</span>
+                <span class="asset-browser-sub">Wszystkie projekty</span>
+            </div>
+            <div id="asset-browser-grid" class="asset-grid"></div>
         </div>
     </div>
 
