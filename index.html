@@ -3,28 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Paweł — Blender Portfolio</title>
+  <title>Paweł — Blender Portfolio (Technical Gallery)</title>
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Fonts: Inter + Roboto Mono -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="css/style.css" />
 </head>
-<body class="studio-premium">
-
-  <!-- Intro -->
-  <div id="intro" class="intro" aria-hidden="true">
-    <div class="intro-card">
-      <div class="intro-logo">BlenderPortfolio</div>
-      <div class="intro-sub">Paweł — 3D Artist</div>
-      <div class="intro-cta">Portfolio</div>
-    </div>
-  </div>
+<body class="tech-gallery">
 
   <!-- Topbar -->
   <header class="topbar" role="banner">
     <div class="top-left">
-      <div class="brand"><span class="brand-mark">🟠</span><span class="brand-name">BlenderPortfolio</span></div>
+      <div class="brand"><span class="brand-mark">▣</span><span class="brand-name">BlenderPortfolio</span></div>
       <nav class="nav" aria-label="Nawigacja">
         <button class="nav-btn active" data-section="about" type="button">O mnie</button>
         <button class="nav-btn" data-section="projects" type="button">Projekty</button>
@@ -33,17 +24,18 @@
     <div class="top-right">
       <a class="link" href="https://www.artstation.com/actorn" target="_blank" rel="noopener">ArtStation</a>
       <a class="link" href="https://www.linkedin.com/in/pawelbeiger" target="_blank" rel="noopener">LinkedIn</a>
-      <button id="themeToggle" class="icon" aria-pressed="false" type="button">☯</button>
+      <button id="themeToggle" class="icon" aria-pressed="false" type="button">T</button>
     </div>
   </header>
 
-  <!-- Main layout -->
+  <!-- Main -->
   <main class="main">
+    <!-- Left: viewport -->
     <section class="viewport-area">
       <div class="viewport-shell">
         <canvas id="viewportCanvas" aria-label="Viewport 3D"></canvas>
-        <div class="viewport-ui">
-          <div class="viewport-title">Default Cube</div>
+        <div class="viewport-overlay">
+          <div class="viewport-label">Default Cube</div>
         </div>
       </div>
 
@@ -52,10 +44,11 @@
       </div>
     </section>
 
+    <!-- Right: side metadata -->
     <aside class="side-panel" aria-label="Panel boczny">
       <div class="meta">
         <h3>Paweł</h3>
-        <p class="muted">3D Artist — Blender & UE5 (Blueprints)</p>
+        <p class="muted">3D Artist — Blender; Blueprinty UE5</p>
         <div class="meta-section">
           <h4>Edukacja</h4>
           <p>Polsko‑Japońska Akademia Technik Komputerowych w Gdańsku (PJAIT) — Inżynieria gier komputerowych.</p>
@@ -63,14 +56,14 @@
       </div>
     </aside>
 
+    <!-- Content -->
     <section class="content">
       <article id="about" class="panel active">
         <h1>O mnie</h1>
         <p>
           Jestem Paweł. Od 2 lat zajmuję się Blenderem, łącząc techniczną precyzję z artystycznym wyczuciem.
-          Ukończyłem Polsko‑Japońską Akademię Technik Komputerowych w Gdańsku (PJAIT) na kierunku Informatyka, ze specjalizacją w inżynierii gier komputerowych.
-          Tworzę zarówno modele low‑poly, jak i high‑poly, skupiając się głównie na mniejszych, dopracowanych assetach zamiast pełnych leveli.
-          Dodatkowo programuję blueprinty w Unreal Engine 5.
+          Ukończyłem Polsko‑Japońską Akademię Technik Komputerowych w Gdańsku (PJAIT) na kierunku Informatyka, specjalizacja: inżynieria gier komputerowych.
+          Tworzę modele low‑poly i high‑poly, skupiając się na dopracowanych assetach. Programuję blueprinty w UE5, integrując assety z funkcjonalnymi prototypami.
         </p>
       </article>
 
@@ -98,8 +91,8 @@
     </div>
   </div>
 
-  <!-- Three.js first, then main script with defer -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
-  <script src="js/main.js" defer></script>
+  <!-- Scripts: Three.js then main (defer-like by placing at end) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>
