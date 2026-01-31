@@ -1,1 +1,18 @@
+{
+  "blender": [
+    {
+      "title": "Sci‑Fi Corridor",
+      "image": "assets/blender/corridor.jpg",
+      "description": "Model i render sci‑fi korytarza inspirowany Alienem."
+    }
+  ],
+  "ue5": [
+    {
+      "title": "Forest Scene",
+      "image": "assets/ue5/forest.png",
+      "description": "Środowisko leśne z dynamicznym oświetleniem."
+    }
+  ]
+}
+
 
