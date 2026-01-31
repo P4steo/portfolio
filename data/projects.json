@@ -5,15 +5,17 @@
       "image": "assets/blender/MajonezProteinowy.png",
       "description": "Prześmiewcza odpowiedź na marketingowy trend dodawania białka do produktów codziennych"
     }
-  ],
-  "ue5": [
     {
       "title": "Szachownica",
       "image": "assets/ue5/szachownica.png",
       "description": "Klatka z animacji szachownicy"
     }
+  ],
+  "ue5": [
+    
   ]
 }
+
 
 
 
