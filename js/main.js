@@ -1,154 +1,256 @@
-// TAB SWITCHING + SECTION ANIM
-const buttons = document.querySelectorAll('.tabs button');
-const sections = document.querySelectorAll('.section');
+// UI Interactions
+document.addEventListener('DOMContentLoaded', () => {
+  // Tabs
+  const tabs = document.querySelectorAll('.tab');
+  const sections = document.querySelectorAll('.section');
+  tabs.forEach(t => t.addEventListener('click', () => {
+    tabs.forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    const id = t.dataset.section;
+    sections.forEach(s => s.classList.remove('section-active'));
+    document.getElementById(id).classList.add('section-active');
+    // scroll to top of content for better UX
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }));
 
-buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        const targetId = btn.dataset.section;
+  // Tools toggling
+  const tools = document.querySelectorAll('.tool');
+  tools.forEach(tool => tool.addEventListener('click', () => {
+    tools.forEach(t => t.classList.remove('active'));
+    tool.classList.add('active');
+  }));
+  // default select
+  document.getElementById('tool-select').classList.add('active');
 
-        sections.forEach(sec => {
-            sec.classList.remove('section-active');
-        });
-        document.getElementById(targetId).classList.add('section-active');
-
-        buttons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    });
-});
-
-// THEME TOGGLE
-const themeToggle = document.getElementById('themeToggle');
-themeToggle.addEventListener('click', () => {
+  // Theme toggle
+  const themeToggle = document.getElementById('themeToggle');
+  themeToggle.addEventListener('click', () => {
     const body = document.body;
     if (body.classList.contains('theme-dark')) {
-        body.classList.remove('theme-dark');
-        body.classList.add('theme-light');
+      body.classList.remove('theme-dark');
+      body.classList.add('theme-light');
+      themeToggle.setAttribute('aria-pressed', 'true');
     } else {
-        body.classList.remove('theme-light');
-        body.classList.add('theme-dark');
+      body.classList.remove('theme-light');
+      body.classList.add('theme-dark');
+      themeToggle.setAttribute('aria-pressed', 'false');
     }
-});
+  });
 
-// LOAD PROJECTS FROM JSON
-fetch("data/projects.json")
-    .then(res => res.json())
+  // Upload panel
+  const openUpload = document.getElementById('openUpload');
+  const uploadPanel = document.getElementById('uploadPanel');
+  const uploadClose = document.getElementById('uploadClose');
+  openUpload.addEventListener('click', () => uploadPanel.classList.toggle('show'));
+  uploadClose.addEventListener('click', () => uploadPanel.classList.remove('show'));
+
+  // Modal
+  const modal = document.getElementById('modal');
+  const modalImg = document.getElementById('modalImg');
+  const modalMeta = document.getElementById('modalMeta');
+  const modalClose = document.getElementById('modalClose');
+  modalClose.addEventListener('click', () => { modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); });
+
+  // Load projects and wire gallery interactions
+  fetch('data/projects.json')
+    .then(r => r.json())
     .then(data => {
-        loadProjects("blender-projects", data.blender);
-        loadProjects("ue5-projects", data.ue5);
-        loadAssetBrowser(data);
+      populateGallery('blender-projects', data.blender || []);
+      populateGallery('ue5-projects', data.ue5 || []);
+      populateAssetBrowser(data);
     })
-    .catch(err => console.error("Błąd ładowania projects.json:", err));
+    .catch(err => console.error('projects.json load error', err));
 
-function loadProjects(containerId, projects) {
+  function populateGallery(containerId, items) {
     const container = document.getElementById(containerId);
-    container.innerHTML = "";
-
-    projects.forEach(p => {
-        const item = document.createElement("div");
-        item.className = "gallery-item";
-
-        item.innerHTML = `
-            <img src="${p.image}" alt="${p.title}">
-            <h3>${p.title}</h3>
-            <p>${p.description}</p>
-        `;
-
-        container.appendChild(item);
+    container.innerHTML = '';
+    items.forEach(it => {
+      const el = document.createElement('div');
+      el.className = 'gallery-item';
+      el.innerHTML = `<img src="${it.image}" alt="${escapeHtml(it.title)}"><h3>${escapeHtml(it.title)}</h3><p>${escapeHtml(it.description)}</p>`;
+      el.addEventListener('click', () => openModal(it));
+      container.appendChild(el);
     });
-}
+  }
 
-function loadAssetBrowser(data) {
-    const container = document.getElementById("asset-browser-grid");
-    container.innerHTML = "";
-
+  function populateAssetBrowser(data) {
+    const grid = document.getElementById('asset-browser-grid');
+    grid.innerHTML = '';
     const all = [
-        ...(data.blender || []).map(p => ({ ...p, type: "Blender" })),
-        ...(data.ue5 || []).map(p => ({ ...p, type: "UE5" }))
+      ...(data.blender || []).map(p => ({...p, type:'Blender'})),
+      ...(data.ue5 || []).map(p => ({...p, type:'UE5'}))
     ];
-
-    all.forEach(p => {
-        const item = document.createElement("div");
-        item.className = "asset-item";
-
-        item.innerHTML = `
-            <img class="asset-thumb" src="${p.image}" alt="${p.title}">
-            <div class="asset-title">${p.title}</div>
-            <div class="asset-tag">${p.type}</div>
-        `;
-
-        container.appendChild(item);
+    all.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'asset-item';
+      el.innerHTML = `<img class="asset-thumb" src="${item.image}" alt="${escapeHtml(item.title)}"><div class="asset-title">${escapeHtml(item.title)}</div><div class="asset-tag">${item.type}</div>`;
+      el.addEventListener('click', () => openModal(item));
+      grid.appendChild(el);
     });
-}
 
-// THREE.JS VIEWPORT
-const canvas = document.getElementById("cubeCanvas");
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-renderer.setPixelRatio(window.devicePixelRatio || 1);
+    // search
+    const search = document.getElementById('searchAssets');
+    search.addEventListener('input', () => {
+      const q = search.value.trim().toLowerCase();
+      grid.querySelectorAll('.asset-item').forEach(node => {
+        const title = node.querySelector('.asset-title').textContent.toLowerCase();
+        node.style.display = title.includes(q) ? '' : 'none';
+      });
+    });
+  }
 
-function resizeRenderer() {
+  function openModal(item) {
+    modalImg.src = item.image;
+    modalImg.alt = item.title;
+    modalMeta.innerHTML = `<strong>${escapeHtml(item.title)}</strong><p>${escapeHtml(item.description)}</p>`;
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden','false');
+  }
+
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+});
+/* End UI interactions */
+
+
+/* THREE.JS VIEWPORT with mouse-follow cube */
+(() => {
+  const canvas = document.getElementById('cubeCanvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true;
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0f0f0f);
+
+  const camera = new THREE.PerspectiveCamera(50, 2, 0.1, 100);
+  camera.position.set(2.6, 1.8, 3.2);
+  camera.lookAt(0, 0, 0);
+
+  // Grid and axes
+  const grid = new THREE.GridHelper(12, 24, 0x444444, 0x222222);
+  grid.position.y = -0.6;
+  scene.add(grid);
+  const axes = new THREE.AxesHelper(1.6);
+  axes.material.depthTest = false;
+  axes.renderOrder = 2;
+  scene.add(axes);
+
+  // Cube
+  const geometry = new THREE.BoxGeometry(1,1,1);
+  const material = new THREE.MeshStandardMaterial({ color: 0xFF9900, roughness: 0.35, metalness: 0.05 });
+  const cube = new THREE.Mesh(geometry, material);
+  cube.castShadow = true;
+  cube.receiveShadow = true;
+  scene.add(cube);
+
+  // Soft ground plane for subtle contact shadow
+  const groundGeo = new THREE.PlaneGeometry(20,20);
+  const groundMat = new THREE.ShadowMaterial({ opacity: 0.25 });
+  const ground = new THREE.Mesh(groundGeo, groundMat);
+  ground.rotation.x = -Math.PI/2;
+  ground.position.y = -0.61;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  // Lights
+  const key = new THREE.DirectionalLight(0xffffff, 1.0);
+  key.position.set(4,6,4);
+  key.castShadow = true;
+  key.shadow.mapSize.set(1024,1024);
+  key.shadow.camera.near = 0.5;
+  key.shadow.camera.far = 20;
+  scene.add(key);
+
+  const rim = new THREE.DirectionalLight(0xffffff, 0.25);
+  rim.position.set(-3,2,-4);
+  scene.add(rim);
+
+  const ambient = new THREE.AmbientLight(0x404040, 0.8);
+  scene.add(ambient);
+
+  // Resize handling
+  function resize() {
     const width = canvas.clientWidth;
     const height = canvas.clientHeight;
-    renderer.setSize(width, height, false);
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-}
+    if (canvas.width !== width || canvas.height !== height) {
+      renderer.setSize(width, height, false);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    }
+  }
+  window.addEventListener('resize', resize);
 
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x1A1A1A);
+  // Mouse-follow rotation logic
+  let targetRot = { x: 0, y: 0 };
+  let currentRot = { x: 0, y: 0 };
+  const lerp = (a,b,t) => a + (b-a) * t;
 
-const camera = new THREE.PerspectiveCamera(70, 1, 0.1, 100);
-camera.position.set(2.5, 2.5, 3.5);
-camera.lookAt(0, 0, 0);
+  // Map mouse position to rotation targets
+  function onPointerMove(e) {
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width; // 0..1
+    const y = (e.clientY - rect.top) / rect.height; // 0..1
+    // center at 0, range -1..1
+    const nx = (x - 0.5) * 2;
+    const ny = (y - 0.5) * 2;
+    // scale to rotation angles
+    targetRot.y = nx * 0.9; // yaw
+    targetRot.x = -ny * 0.6; // pitch
+  }
 
-// GRID + AXES
-const grid = new THREE.GridHelper(10, 20, 0x555555, 0x333333);
-grid.position.y = -0.5;
-scene.add(grid);
+  // Also respond to touch
+  window.addEventListener('pointermove', onPointerMove);
 
-const axes = new THREE.AxesHelper(1.5);
-scene.add(axes);
+  // subtle auto rotation when idle
+  let idleTimer = 0;
+  function updateIdle(dt) {
+    idleTimer += dt;
+    if (idleTimer > 2.0) {
+      // slowly drift
+      targetRot.y += 0.0006 * dt * 60;
+    }
+  }
+  window.addEventListener('scroll', () => { idleTimer = 0; });
 
-// CUBE
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshStandardMaterial({
-    color: 0xFF9900,
-    roughness: 0.35,
-    metalness: 0.1
-});
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+  // Animation loop
+  let last = performance.now();
+  function animate(now) {
+    const dt = (now - last) / 1000;
+    last = now;
+    resize();
 
-// LIGHTS
-const keyLight = new THREE.DirectionalLight(0xffffff, 1.0);
-keyLight.position.set(4, 6, 5);
-scene.add(keyLight);
+    // smooth lerp
+    currentRot.x = lerp(currentRot.x, targetRot.x, 0.08);
+    currentRot.y = lerp(currentRot.y, targetRot.y, 0.08);
 
-const fillLight = new THREE.DirectionalLight(0xffffff, 0.4);
-fillLight.position.set(-3, 2, -4);
-scene.add(fillLight);
+    // apply rotation to cube
+    cube.rotation.x = currentRot.x + Math.sin(now * 0.0006) * 0.01;
+    cube.rotation.y = currentRot.y + Math.cos(now * 0.0008) * 0.01;
 
-const ambient = new THREE.AmbientLight(0x404040);
-scene.add(ambient);
+    // subtle bob
+    cube.position.y = Math.sin(now * 0.0012) * 0.02;
 
-// ANIMATION
-let autoRot = { x: 0.003, y: 0.004 };
+    // update playhead position based on rotation for visual feedback
+    const playhead = document.getElementById('playhead');
+    if (playhead) {
+      const pct = (currentRot.y + 1.2) / 2.4; // normalize
+      playhead.style.transform = `translateX(${Math.max(0, Math.min(100, pct*100))}%)`;
+    }
 
-function animate() {
-    requestAnimationFrame(animate);
-    cube.rotation.x += autoRot.x;
-    cube.rotation.y += autoRot.y;
-    resizeRenderer();
+    updateIdle(dt);
     renderer.render(scene, camera);
-}
-animate();
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
 
-// SCROLL INTERACTION
-window.addEventListener("scroll", () => {
-    const scrollY = window.scrollY;
-    cube.rotation.y += scrollY * 0.00015;
-    cube.rotation.x += scrollY * 0.00008;
-});
+  // Accessibility: focus canvas to enable keyboard rotation
+  const canvasEl = document.getElementById('cubeCanvas');
+  canvasEl.addEventListener('keydown', (e) => {
+    const step = 0.08;
+    if (e.key === 'ArrowLeft') targetRot.y -= step;
+    if (e.key === 'ArrowRight') targetRot.y += step;
+    if (e.key === 'ArrowUp') targetRot.x -= step;
+    if (e.key === 'ArrowDown') targetRot.x += step;
+  });
 
-// RESIZE HANDLER
-window.addEventListener("resize", resizeRenderer);
-resizeRenderer();
+})();
