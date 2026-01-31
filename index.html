@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio – Blender UI</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+        <div class="logo">BlenderPortfolio</div>
+        <div class="tabs">
+            <button data-section="about" class="active">O mnie</button>
+            <button data-section="blender">Projekty Blender</button>
+            <button data-section="ue5">Projekty UE5</button>
+        </div>
+    </div>
+
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+        <div class="panel-title">Tools</div>
+        <div class="panel-item">Move</div>
+        <div class="panel-item">Rotate</div>
+        <div class="panel-item">Scale</div>
+    </div>
+
+    <!-- VIEWPORT -->
+    <div class="viewport">
+        <canvas id="cubeCanvas"></canvas>
+    </div>
+
+    <!-- CONTENT SECTIONS -->
+    <div class="content">
+        <div id="about" class="section">
+            <h1>O mnie</h1>
+            <p>Cześć! Jestem Paweł i tworzę projekty w Blenderze oraz Unreal Engine 5.</p>
+        </div>
+
+        <div id="blender" class="section" style="display:none">
+            <h1>Projekty Blender</h1>
+            <p>Tu pojawią się Twoje rendery, animacje i modele.</p>
+        </div>
+
+        <div id="ue5" class="section" style="display:none">
+            <h1>Projekty UE5</h1>
+            <p>Tu dodasz screeny, trailery i opisy projektów z Unreal Engine.</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
