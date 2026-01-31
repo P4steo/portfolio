@@ -1,15 +1,7 @@
-/* Studio Minimal Premium CSS */
 :root{
-  --bg:#070708;
-  --panel:#0f0f10;
-  --card:#121213;
-  --muted:#9aa0a6;
-  --accent:#ff8a00;
-  --glass: rgba(255,255,255,0.03);
-  --radius:12px;
+  --bg:#070708; --panel:#0f0f10; --card:#121213; --muted:#9aa0a6; --accent:#ff8a00; --glass: rgba(255,255,255,0.03);
 }
-*{box-sizing:border-box}
-html,body{height:100%}
+*{box-sizing:border-box} html,body{height:100%}
 body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#eaeaea;background:linear-gradient(180deg,#050506,#0b0b0c);-webkit-font-smoothing:antialiased}
 
 /* Intro */
@@ -87,8 +79,4 @@ p{color:var(--muted);line-height:1.6}
 .modal-desc{margin-top:12px;color:var(--muted)}
 
 /* Responsive */
-@media (max-width:1100px){
-  .main{grid-template-columns:1fr}
-  .side-panel{display:none}
-  .content{margin-right:0}
-}
+@media (max-width:1100px){ .main{grid-template-columns:1fr} .side-panel{display:none} .content{margin-right:0} }
