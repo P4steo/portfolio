@@ -1,5 +1,11 @@
-// UI Interactions
+// UI Interactions and Intro
 document.addEventListener('DOMContentLoaded', () => {
+  // Intro hide after animation
+  setTimeout(() => {
+    const intro = document.getElementById('intro');
+    if (intro) intro.style.display = 'none';
+  }, 1200);
+
   // Tabs
   const tabs = document.querySelectorAll('.tab');
   const sections = document.querySelectorAll('.section');
@@ -9,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const id = t.dataset.section;
     sections.forEach(s => s.classList.remove('section-active'));
     document.getElementById(id).classList.add('section-active');
-    // scroll to top of content for better UX
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }));
 
@@ -19,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
     tools.forEach(t => t.classList.remove('active'));
     tool.classList.add('active');
   }));
-  // default select
   document.getElementById('tool-select').classList.add('active');
 
   // Theme toggle
@@ -37,13 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Upload panel
-  const openUpload = document.getElementById('openUpload');
-  const uploadPanel = document.getElementById('uploadPanel');
-  const uploadClose = document.getElementById('uploadClose');
-  openUpload.addEventListener('click', () => uploadPanel.classList.toggle('show'));
-  uploadClose.addEventListener('click', () => uploadPanel.classList.remove('show'));
-
   // Modal
   const modal = document.getElementById('modal');
   const modalImg = document.getElementById('modalImg');
@@ -55,8 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
   fetch('data/projects.json')
     .then(r => r.json())
     .then(data => {
-      populateGallery('blender-projects', data.blender || []);
-      populateGallery('ue5-projects', data.ue5 || []);
+      populateGallery('projects-gallery', data.blender || []);
       populateAssetBrowser(data);
     })
     .catch(err => console.error('projects.json load error', err));
@@ -76,10 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function populateAssetBrowser(data) {
     const grid = document.getElementById('asset-browser-grid');
     grid.innerHTML = '';
-    const all = [
-      ...(data.blender || []).map(p => ({...p, type:'Blender'})),
-      ...(data.ue5 || []).map(p => ({...p, type:'UE5'}))
-    ];
+    const all = (data.blender || []).map(p => ({...p, type:'Blender'}));
     all.forEach(item => {
       const el = document.createElement('div');
       el.className = 'asset-item';
@@ -90,13 +83,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // search
     const search = document.getElementById('searchAssets');
-    search.addEventListener('input', () => {
-      const q = search.value.trim().toLowerCase();
-      grid.querySelectorAll('.asset-item').forEach(node => {
-        const title = node.querySelector('.asset-title').textContent.toLowerCase();
-        node.style.display = title.includes(q) ? '' : 'none';
+    if (search) {
+      search.addEventListener('input', () => {
+        const q = search.value.trim().toLowerCase();
+        grid.querySelectorAll('.asset-item').forEach(node => {
+          const title = node.querySelector('.asset-title').textContent.toLowerCase();
+          node.style.display = title.includes(q) ? '' : 'none';
+        });
       });
-    });
+    }
   }
 
   function openModal(item) {
@@ -109,10 +104,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 });
-/* End UI interactions */
 
-
-/* THREE.JS VIEWPORT with mouse-follow cube */
+// THREE.JS VIEWPORT with mouse-follow cube
 (() => {
   const canvas = document.getElementById('cubeCanvas');
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
@@ -185,28 +178,22 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentRot = { x: 0, y: 0 };
   const lerp = (a,b,t) => a + (b-a) * t;
 
-  // Map mouse position to rotation targets
   function onPointerMove(e) {
     const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width; // 0..1
-    const y = (e.clientY - rect.top) / rect.height; // 0..1
-    // center at 0, range -1..1
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
     const nx = (x - 0.5) * 2;
     const ny = (y - 0.5) * 2;
-    // scale to rotation angles
-    targetRot.y = nx * 0.9; // yaw
-    targetRot.x = -ny * 0.6; // pitch
+    targetRot.y = nx * 1.0;
+    targetRot.x = -ny * 0.7;
   }
-
-  // Also respond to touch
   window.addEventListener('pointermove', onPointerMove);
 
-  // subtle auto rotation when idle
+  // Idle drift
   let idleTimer = 0;
   function updateIdle(dt) {
     idleTimer += dt;
     if (idleTimer > 2.0) {
-      // slowly drift
       targetRot.y += 0.0006 * dt * 60;
     }
   }
@@ -219,21 +206,16 @@ document.addEventListener('DOMContentLoaded', () => {
     last = now;
     resize();
 
-    // smooth lerp
     currentRot.x = lerp(currentRot.x, targetRot.x, 0.08);
     currentRot.y = lerp(currentRot.y, targetRot.y, 0.08);
 
-    // apply rotation to cube
     cube.rotation.x = currentRot.x + Math.sin(now * 0.0006) * 0.01;
     cube.rotation.y = currentRot.y + Math.cos(now * 0.0008) * 0.01;
-
-    // subtle bob
     cube.position.y = Math.sin(now * 0.0012) * 0.02;
 
-    // update playhead position based on rotation for visual feedback
     const playhead = document.getElementById('playhead');
     if (playhead) {
-      const pct = (currentRot.y + 1.2) / 2.4; // normalize
+      const pct = (currentRot.y + 1.2) / 2.4;
       playhead.style.transform = `translateX(${Math.max(0, Math.min(100, pct*100))}%)`;
     }
 
@@ -243,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   requestAnimationFrame(animate);
 
-  // Accessibility: focus canvas to enable keyboard rotation
+  // Keyboard control for accessibility
   const canvasEl = document.getElementById('cubeCanvas');
   canvasEl.addEventListener('keydown', (e) => {
     const step = 0.08;
@@ -252,5 +234,4 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'ArrowUp') targetRot.x -= step;
     if (e.key === 'ArrowDown') targetRot.x += step;
   });
-
 })();
