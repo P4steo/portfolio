@@ -7,7 +7,7 @@
     },
     {
       "title": "Szachownica",
-      "image": "assets/ue5/szachownica.png",
+      "image": "assets/blender/szachownica.png",
       "description": "Klatka z animacji szachownicy"
     }
   ],
@@ -15,6 +15,7 @@
     
   ]
 }
+
 
 
 
