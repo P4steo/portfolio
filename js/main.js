@@ -1,13 +1,13 @@
-// main.js — poprawiona, stabilna wersja
+// js/main.js — Technical Gallery (gold accent)
 (function () {
   'use strict';
 
-  // Helper: escape HTML
+  // escape helper
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
 
-  // DOM ready (defer scripts used)
+  // DOM ready
   window.addEventListener('load', () => {
     // Intro hide
     setTimeout(() => {
@@ -28,29 +28,19 @@
       });
     });
 
-    // Theme toggle with localStorage
+    // Theme toggle + localStorage
     (function themeInit() {
-      const THEME_KEY = 'bp_theme_v2';
+      const KEY = 'bp_theme_tech';
       const body = document.body;
       const toggle = document.getElementById('themeToggle');
-      const saved = localStorage.getItem(THEME_KEY);
+      const saved = localStorage.getItem(KEY);
       if (saved === 'light') body.classList.add('theme-light');
       if (toggle) toggle.setAttribute('aria-pressed', body.classList.contains('theme-light') ? 'true' : 'false');
-      function flashAccent() {
-        const el = document.createElement('div');
-        el.style.position = 'fixed'; el.style.inset = '0'; el.style.pointerEvents = 'none';
-        el.style.background = body.classList.contains('theme-light') ? 'linear-gradient(180deg, rgba(0,110,106,0.06), transparent)' : 'linear-gradient(180deg, rgba(0,179,166,0.06), transparent)';
-        el.style.opacity = '0'; el.style.transition = 'opacity 420ms ease';
-        document.body.appendChild(el);
-        requestAnimationFrame(() => el.style.opacity = '1');
-        setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 420); }, 420);
-      }
       if (toggle) {
         toggle.addEventListener('click', () => {
           const isLight = body.classList.toggle('theme-light');
-          localStorage.setItem(THEME_KEY, isLight ? 'light' : 'dark');
+          localStorage.setItem(KEY, isLight ? 'light' : 'dark');
           toggle.setAttribute('aria-pressed', isLight ? 'true' : 'false');
-          flashAccent();
         });
       }
       window.addEventListener('keydown', (e) => { if (e.key.toLowerCase() === 't' && document.activeElement.tagName !== 'INPUT') { if (toggle) toggle.click(); } });
@@ -66,7 +56,7 @@
     // Load projects.json
     fetch('data/projects.json', { cache: 'no-store' })
       .then(r => {
-        if (!r.ok) throw new Error('projects.json not found or network error');
+        if (!r.ok) throw new Error('projects.json not found');
         return r.json();
       })
       .then(data => {
@@ -102,7 +92,7 @@
       .catch(err => {
         console.error('projects.json load error:', err);
         const gallery = document.getElementById('gallery');
-        if (gallery) gallery.innerHTML = '<p style="color: #f88">Brak projektów do wyświetlenia — sprawdź data/projects.json</p>';
+        if (gallery) gallery.innerHTML = '<p style="color:#f88">Brak projektów — sprawdź data/projects.json</p>';
       });
 
     function openModal(it) {
@@ -114,7 +104,7 @@
     }
   }); // end load
 
-  // Three.js viewport (separate scope)
+  // Three.js viewport (Technical Gallery)
   (function threeViewport() {
     const canvas = document.getElementById('viewportCanvas');
     if (!canvas || typeof THREE === 'undefined') return;
@@ -125,20 +115,26 @@
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x071826);
+    scene.background = new THREE.Color(0x071014);
 
     const camera = new THREE.PerspectiveCamera(50, 2, 0.1, 100);
     camera.position.set(2.6, 1.8, 3.2);
     camera.lookAt(0, 0, 0);
 
     // Grid
-    const grid = new THREE.GridHelper(14, 28, 0x2b2b2b, 0x151515);
+    const grid = new THREE.GridHelper(12, 24, 0x2b2b2b, 0x151515);
     grid.position.y = -0.62;
     scene.add(grid);
 
     // Cube
     const geo = new THREE.BoxGeometry(1, 1, 1);
-    const mat = new THREE.MeshPhysicalMaterial({ color: 0xC9A34A, roughness: 0.28, metalness: 0.12, clearcoat: 0.12, clearcoatRoughness: 0.05 });
+    const mat = new THREE.MeshPhysicalMaterial({
+      color: 0xC9A34A, // gold
+      roughness: 0.32,
+      metalness: 0.25,
+      clearcoat: 0.08,
+      clearcoatRoughness: 0.05
+    });
     const cube = new THREE.Mesh(geo, mat);
     cube.castShadow = true; cube.receiveShadow = true;
     scene.add(cube);
@@ -147,12 +143,21 @@
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), new THREE.ShadowMaterial({ opacity: 0.28 }));
     ground.rotation.x = -Math.PI / 2; ground.position.y = -0.62; ground.receiveShadow = true; scene.add(ground);
 
-    // Lights
-    const key = new THREE.DirectionalLight(0xffffff, 1.2); key.position.set(4, 6, 4); key.castShadow = true;
-    key.shadow.mapSize.set(2048, 2048); key.shadow.camera.near = 0.5; key.shadow.camera.far = 30; scene.add(key);
-    const fill = new THREE.DirectionalLight(0xffffff, 0.45); fill.position.set(-3, 2, -3); scene.add(fill);
-    const rim = new THREE.DirectionalLight(0xffffff, 0.35); rim.position.set(-6, 3, 5); scene.add(rim);
-    const hemi = new THREE.HemisphereLight(0xaaaaaa, 0x080820, 0.25); scene.add(hemi);
+    // Lights: neutral HDRI-like feel via hemisphere + directional
+    const hemi = new THREE.HemisphereLight(0xffffff, 0x080820, 0.35);
+    scene.add(hemi);
+
+    const key = new THREE.DirectionalLight(0xffffff, 1.0);
+    key.position.set(4, 6, 4);
+    key.castShadow = true;
+    key.shadow.mapSize.set(2048, 2048);
+    key.shadow.camera.near = 0.5;
+    key.shadow.camera.far = 30;
+    scene.add(key);
+
+    const fill = new THREE.DirectionalLight(0xffffff, 0.35);
+    fill.position.set(-3, 2, -3);
+    scene.add(fill);
 
     // Resize
     function resize() {
@@ -174,7 +179,7 @@
       const x = (e.clientX - r.left) / r.width;
       const y = (e.clientY - r.top) / r.height;
       const nx = (x - 0.5) * 2, ny = (y - 0.5) * 2;
-      target.y = nx * 1.05; target.x = -ny * 0.75;
+      target.y = nx * 1.0; target.x = -ny * 0.6;
     }
     window.addEventListener('pointermove', onMove);
 
@@ -201,8 +206,7 @@
     requestAnimationFrame(anim);
 
     // Keyboard focus
-    const c = canvas;
-    c.addEventListener('keydown', e => {
+    canvas.addEventListener('keydown', e => {
       const step = 0.08;
       if (e.key === 'ArrowLeft') target.y -= step;
       if (e.key === 'ArrowRight') target.y += step;
@@ -211,4 +215,4 @@
     });
   })();
 
-})(); // end main IIFE
+})(); // end IIFE
