@@ -1,4 +1,4 @@
-// js/main.js — Technical Gallery (gold accent)
+ // js/main.js — Technical Gallery (gold accent)
 (function () {
   'use strict';
 
@@ -216,3 +216,4 @@
   })();
 
 })(); // end IIFE
+
